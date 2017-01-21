@@ -38,8 +38,8 @@ class TestAPI(unittest.TestCase):
         shutil.rmtree(upload_path())
 
     def create_entries(self):
-        file = File(filename="test_file.mp4")
-        song = Song(file=file)
+        file = models.File(filename="test_file.mp4")
+        song = models.Song(file=file)
         session.add(file)
         session.commit()
 
@@ -50,12 +50,12 @@ class TestAPI(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data.decode("ascii"))
-        data_assertion = {
-            "id": 0,
+        data_assertion = [{
+            "id": 1,
             "file": {
-                "id": 0,
-                "filename": "test_file.mp4"
+                "id": 1,
+                "name": "test_file.mp4"
             }
-        }
+        }]
         self.assertEqual(data, data_assertion)
 
