@@ -40,7 +40,11 @@ class TestAPI(unittest.TestCase):
     def create_entries(self):
         file = models.File(filename="test_file.mp4")
         song = models.Song(file=file)
-        session.add(file)
+
+        file_2 = models.File(filename="another_song.mp3")
+        song_2 = models.Song(file=file_2)
+        
+        session.add_all([file, file_2])
         session.commit()
 
     def test_songs_get(self):
@@ -51,11 +55,18 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data.decode("ascii"))
         data_assertion = [{
-            "id": 1,
-            "file": {
                 "id": 1,
-                "name": "test_file.mp4"
-            }
-        }]
+                "file": {
+                    "id": 1,
+                    "name": "test_file.mp4"
+                        }
+            },
+            {
+                "id": 2,
+                "file":{
+                    "id": 2,
+                    "name": "another_song.mp3"
+                }
+            }]
         self.assertEqual(data, data_assertion)
 
