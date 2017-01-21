@@ -12,3 +12,10 @@ from .database import session
 from .utils import upload_path
 
 
+@app.route("/api/songs", methods=["GET"])
+def songs_get():
+    """Return all songs"""
+    songs = session.query(models.Songs).order_by(models.Songs.id)
+    data = json.dumps([song.as_dictionary() for song in songs])
+    
+    return Response(data, 200, mimetype="application/json")

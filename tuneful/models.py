@@ -15,7 +15,7 @@ class Song(Base):
     def as_dictionary(self):
         song = {
             "id": self.id,
-            "file": self.file_id.as_dictionary()
+            "file": self.file.as_dictionary()
         }
         return song
 
@@ -25,7 +25,7 @@ class File(Base):
     filename = Column(String(150))
     song = relationship("Song", uselist=False, backref="file")
 
-    def as_dictonary(self):
+    def as_dictionary(self):
         file ={
             "id": self.id,
             "name": self.filename

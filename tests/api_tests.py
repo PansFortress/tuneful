@@ -37,4 +37,25 @@ class TestAPI(unittest.TestCase):
         # Delete test upload folder
         shutil.rmtree(upload_path())
 
+    def create_entries(self):
+        file = File(filename="test_file.mp4")
+        song = Song(file=file)
+        session.add(file)
+        session.commit()
+
+    def test_songs_get(self):
+        self.create_entries()
+        response = self.client.get("/api/songs", 
+            headers=[("Accept", "application/json")])
+
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data.decode("ascii"))
+        data_assertion = {
+            "id": 0,
+            "file": {
+                "id": 0,
+                "filename": "test_file.mp4"
+            }
+        }
+        self.assertEqual(data, data_assertion)
 
