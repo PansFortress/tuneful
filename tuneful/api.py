@@ -22,4 +22,12 @@ def songs_get():
 
 @app.route("/api/songs", methods=["POST"])
 def songs_post():
-    pass
+    data = request.json
+
+    song = models.Song(id=data["id"], file=data["file"])
+    sesion.add(song)
+    session.commit()
+
+    data = json.dumps(song.as_dictionary())
+    
+    return Response(data, 201, mimetype="application/json")

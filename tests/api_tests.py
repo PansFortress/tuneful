@@ -79,8 +79,14 @@ class TestAPI(unittest.TestCase):
             }
         }
 
-        response = self.client.post("api/songs",
-                    data=json.dumps(data),
-                    content_type="application/json",
-                    headers=[("Accept", "application/json")])
+        response = self.client.post("/api/songs",
+            data=json.dumps(data),
+            content_type="application/json",
+            headers=[("Accept", "application/json")])
 
+        self.assertEqual(response.status_code, 201)
+        data_back = json.loads(response.data.decode("ascii"))
+        self.assertEqual(data_back, data)
+
+        songs = session.query(models.Song).order_by(models.Song.id)
+        self.assertEqual(len(songs), 1)
