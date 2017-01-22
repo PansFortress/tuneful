@@ -70,3 +70,17 @@ class TestAPI(unittest.TestCase):
             }]
         self.assertEqual(data, data_assertion)
 
+    def test_songs_post(self):
+        data = {
+            "id": 3,
+            "file":{
+                "id": 3,
+                "name": "song_post.mp3"
+            }
+        }
+
+        response = self.client.post("api/songs",
+                    data=json.dumps(data),
+                    content_type="application/json",
+                    headers=[("Accept", "application/json")])
+

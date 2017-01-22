@@ -11,7 +11,7 @@ from tuneful import app
 from .database import session
 from .utils import upload_path
 
-
+@decorators.accept("application/json")
 @app.route("/api/songs", methods=["GET"])
 def songs_get():
     """Return all songs"""
@@ -19,3 +19,7 @@ def songs_get():
     data = json.dumps([song.as_dictionary() for song in songs])
     
     return Response(data, 200, mimetype="application/json")
+
+@app.route("/api/songs", methods=["POST"])
+def songs_post():
+    pass
