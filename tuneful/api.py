@@ -20,6 +20,14 @@ def songs_get():
     
     return Response(data, 200, mimetype="application/json")
 
+@decorators.accept("application/json")
+@app.route("/api/songs/<int:id>", methods=["GET"])
+def song_get(id):
+    song = session.query(models.Song).get(id)
+    data = json.dumps(song.as_dictionary())
+
+    return Response(data, 200, mimetype="application/json")
+
 @app.route("/api/songs", methods=["POST"])
 def songs_post():
     data = request.json
@@ -31,3 +39,14 @@ def songs_post():
     data = json.dumps(song.as_dictionary())
     
     return Response(data, 201, mimetype="application/json")
+
+@app.route("/api/songs/<int:id>", methods=["DELETE"])
+def song_delete(id):
+    song = session.query(models.Song).get(id)
+    session.delete(song)
+    session.commit()
+
+    message = "{} has been deleted successfully".format(id)
+    data = json.dumps({"message": message})
+
+    return Response(data, 200, mimetype="application/json")
