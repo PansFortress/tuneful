@@ -92,33 +92,33 @@ class TestAPI(unittest.TestCase):
 
 # Is my post tests failing because the following are ints?
 # Not clear on what's throwing the current errors in tests
-    # def test_songs_post(self):
-    #     data = {
-    #         "id": 3,
-    #         "file":{
-    #             "id": 3,
-    #             "name": "song_post.mp3"
-    #         }
-    #     }
+    def test_songs_post(self):
+        file = File(filename="New_File.mp4")
+        session.add(file)
+        session.commit()
 
-    #     response = self.client.post("/api/songs",
-    #         data=json.dumps(data),
-    #         content_type="application/json",
-    #         headers=[("Accept", "application/json")])
+        song = {
+            "file": {
+                "id": file.id
+            }
+        }
 
-    #     self.assertEqual(response.status_code, 201)
-    #     data_back = json.loads(response.data.decode("ascii"))
-    #     self.assertEqual(data_back, data)
+        response = self.client.post("/api/songs",
+            data=json.dumps(song),
+            content_type="application/json",
+            headers=[("Accept", "application/json")])
 
-    #     songs = session.query(models.Song).order_by(models.Song.id)
-    #     self.assertEqual(len(songs), 1)
+        self.assertEqual(response.status_code, 201)
+        data_back = json.loads(response.data.decode("ascii"))
+        self.assertEqual(data_back, song)
+
+        songs = session.query(models.Song).order_by(models.Song.id)
+        self.assertEqual(len(songs), 1)
 
     def test_songs_delete(self):
         self.create_entries()
         songs = session.query(models.Song).all()
-        files = session.query(models.File).all()
         self.assertEqual(len(songs), 2)
-        self.assertEqual(len(files),2)
 
         # Delete an entry
         response = self.client.delete("/api/songs/1",

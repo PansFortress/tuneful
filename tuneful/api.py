@@ -20,6 +20,7 @@ def songs_get():
     
     return Response(data, 200, mimetype="application/json")
 
+# TODO: Account for non existent songs
 @decorators.accept("application/json")
 @app.route("/api/songs/<int:id>", methods=["GET"])
 def song_get(id):
@@ -40,6 +41,9 @@ def songs_post():
     
     return Response(data, 201, mimetype="application/json")
 
+# @app.route("/api/files", methods=["POST"])
+
+# TODO: Checks for if there was no such entry
 @app.route("/api/songs/<int:id>", methods=["DELETE"])
 def song_delete(id):
     song = session.query(models.Song).get(id)
