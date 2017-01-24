@@ -90,10 +90,8 @@ class TestAPI(unittest.TestCase):
         data = json.loads(response.data.decode("ascii"))
         self.assertEqual(data, data_assertion)
 
-# Is my post tests failing because the following are ints?
-# Not clear on what's throwing the current errors in tests
     def test_songs_post(self):
-        file = File(filename="New_File.mp4")
+        file = models.File(filename="New_File.mp4")
         session.add(file)
         session.commit()
 

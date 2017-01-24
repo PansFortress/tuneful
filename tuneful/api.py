@@ -33,8 +33,8 @@ def song_get(id):
 def songs_post():
     data = request.json
 
-    song = models.Song(id=data["id"], file=data["file"])
-    sesion.add(song)
+    song = models.Song(file=data["file"])
+    session.add(song)
     session.commit()
 
     data = json.dumps(song.as_dictionary())
