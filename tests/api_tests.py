@@ -90,6 +90,7 @@ class TestAPI(unittest.TestCase):
         data = json.loads(response.data.decode("ascii"))
         self.assertEqual(data, data_assertion)
 
+# Would double check w/ Chris on this one
     def test_songs_post(self):
         file = models.File(filename="New_File.mp4")
         session.add(file)
@@ -108,10 +109,11 @@ class TestAPI(unittest.TestCase):
 
         self.assertEqual(response.status_code, 201)
         data_back = json.loads(response.data.decode("ascii"))
-        self.assertEqual(data_back, song)
 
-        songs = session.query(models.Song).order_by(models.Song.id)
+        songs = session.query(models.Song).all()
         self.assertEqual(len(songs), 1)
+
+        self.assertEqual(data_back, songs[0].as_dictionary())
 
     def test_songs_delete(self):
         self.create_entries()
