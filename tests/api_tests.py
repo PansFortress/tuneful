@@ -136,12 +136,13 @@ class TestAPI(unittest.TestCase):
 
         song_update = {
             "file":{
-                "id": file_id
+                "file_id": file_id
             }
         }
 
         response = self.client.put("/api/songs/{}".format(file_id),
                                    data=json.dumps(song_update),
+                                   content_type="application/json",
                                    headers=[("Accept", "application/json")])
 
         data = json.loads(response.data.decode("ascii"))
@@ -158,12 +159,13 @@ class TestAPI(unittest.TestCase):
 
         song_update = {
             "file":{
-                "id": new_file_id
+                "file_id": new_file_id
             }
         }
 
         response = self.client.put("/api/songs/{}".format(song.id),
                                    data=json.dumps(song_update),
+                                   content_type="application/json",
                                    headers=[("Accept", "application/json")])
 
         data = json.loads(response.data.decode("ascii"))
