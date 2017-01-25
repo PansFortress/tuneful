@@ -129,8 +129,8 @@ class TestAPI(unittest.TestCase):
         data = json.loads(response.data.decode("ascii"))
         self.assertEqual(data["message"], "1 has been deleted successfully")
 
-        songs = session.query(models.Song).all()
-        self.assertEqual(len(songs),1)
+        songs = session.query(models.Song).get(1)
+        self.assertEqual(songs, None)
 
         # files = session.query(models.File).all()
         # self.assertEqual(len(files),1)
