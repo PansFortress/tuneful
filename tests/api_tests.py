@@ -120,7 +120,6 @@ class TestAPI(unittest.TestCase):
         songs = session.query(models.Song).all()
         self.assertEqual(len(songs), 2)
 
-        # Delete an entry
         response = self.client.delete("/api/songs/1",
             headers=[("Accept", "application/json")])
 
@@ -132,5 +131,40 @@ class TestAPI(unittest.TestCase):
         songs = session.query(models.Song).get(1)
         self.assertEqual(songs, None)
 
-        # files = session.query(models.File).all()
-        # self.assertEqual(len(files),1)
+    def test_songs_put_no_entry(self):
+        file_id = 1
+
+        song_update = {
+            "file":{
+                "id": file_id
+            }
+        }
+
+        response = self.client.put("/api/songs/{}".format(file_id),
+                                   data=json.dumps(song_update),
+                                   headers=[("Accept", "application/json")])
+
+        data = json.loads(response.data.decode("ascii"))
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data["message"], "1 does not exist and cannot be updated")
+
+    def test_songs_put(self):
+        self.create_entries()
+        song = session.query(models.Song).first()
+        self.assertEqual(song.id, 1)
+        self.assertEqual(song.file_id, 1)
+
+        new_file_id = 9
+
+        song_update = {
+            "file":{
+                "id": new_file_id
+            }
+        }
+
+        response = self.client.put("/api/songs/{}".format(song.id),
+                                   data=json.dumps(song_update),
+                                   headers=[("Accept", "application/json")])
+
+        data = json.loads(response.data.decode("ascii"))
+        self.assertEqual(response.status_code, 200)

@@ -11,6 +11,17 @@ from tuneful import app
 from .database import session
 from .utils import upload_path
 
+song_schema = {
+    "definitions":{
+        "file":{
+            "type": "object",
+            "properties": {
+                "file_id": {"type": "int"}
+            }
+        }
+    }
+}
+
 @decorators.accept("application/json")
 @app.route("/api/songs", methods=["GET"])
 def songs_get():
@@ -20,11 +31,16 @@ def songs_get():
     
     return Response(data, 200, mimetype="application/json")
 
-# TODO: Account for non existent songs
 @decorators.accept("application/json")
 @app.route("/api/songs/<int:id>", methods=["GET"])
 def song_get(id):
     song = session.query(models.Song).get(id)
+
+    if not song:
+        message = "{} does not existed and cannot be retrieved".format(id)
+        data = json.dumps({"message": message})
+        return Response(data, 404, mimetype="application/json")
+    
     data = json.dumps(song.as_dictionary())
 
     return Response(data, 200, mimetype="application/json")
@@ -33,7 +49,7 @@ def song_get(id):
 def songs_post():
     data = request.json
 
-    song = models.Song(file_id=data["file"]["id"])
+    song = models.Song(file_id=data["file"]["file_id"])
     session.add(song)
     session.commit()
 
@@ -41,16 +57,36 @@ def songs_post():
     
     return Response(data, 201, mimetype="application/json")
 
-# @app.route("/api/files", methods=["POST"])
-
-# TODO: Checks for if there was no such entry
 @app.route("/api/songs/<int:id>", methods=["DELETE"])
 def song_delete(id):
     song = session.query(models.Song).get(id)
+    
+    if not song:
+        message = "{} does not exist and cannot be deleted".format(id)
+        data = json.dumps({"message": message})
+        return Response(data, 404, mimetype="application/json")
+
     session.delete(song)
     session.commit()
 
     message = "{} has been deleted successfully".format(id)
     data = json.dumps({"message": message})
+
+    return Response(data, 200, mimetype="application/json")
+
+# TODO: Need to validate data schema
+@app.route("/api/songs/<int:id>", methods=["PUT"])
+def song_put(id):
+    song = session.query(models.Song).get(id)
+    data = request.json
+
+    if not song:
+        message = "{} does not exist and cannot be updated".format(id)
+        data = json.dumps({"message": message})
+        return Response(data, 404, mimetype="application/json")
+
+    song.file_id = data["file"]["file_id"]
+    sesion.commit()
+    messsage = "{} has been updated".formate(id)
 
     return Response(data, 200, mimetype="application/json")
