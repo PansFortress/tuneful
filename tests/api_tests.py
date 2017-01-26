@@ -90,7 +90,6 @@ class TestAPI(unittest.TestCase):
         data = json.loads(response.data.decode("ascii"))
         self.assertEqual(data, data_assertion)
 
-# Would double check w/ Chris on this one
     def test_songs_post(self):
         file = models.File(filename="New_File.mp4")
         session.add(file)
@@ -98,7 +97,7 @@ class TestAPI(unittest.TestCase):
 
         song = {
             "file": {
-                "file_id": file.id
+                "id": file.id
             }
         }
 
@@ -108,11 +107,11 @@ class TestAPI(unittest.TestCase):
             headers=[("Accept", "application/json")])
 
         self.assertEqual(response.status_code, 201)
-        data_back = json.loads(response.data.decode("ascii"))
 
         songs = session.query(models.Song).all()
         self.assertEqual(len(songs), 1)
 
+        data_back = json.loads(response.data.decode("ascii"))
         self.assertEqual(data_back, songs[0].as_dictionary())
 
     def test_songs_delete(self):
@@ -128,15 +127,18 @@ class TestAPI(unittest.TestCase):
         data = json.loads(response.data.decode("ascii"))
         self.assertEqual(data["message"], "1 has been deleted successfully")
 
-        songs = session.query(models.Song).get(1)
-        self.assertEqual(songs, None)
+        song = session.query(models.Song).get(1)
+        self.assertEqual(song, None)
+
+        songs = session.query(models.Song).all()
+        self.assertEqual(len(songs), 1)
 
     def test_songs_put_no_entry(self):
         file_id = 1
 
         song_update = {
             "file":{
-                "file_id": file_id
+                "id": file_id
             }
         }
 
@@ -166,7 +168,7 @@ class TestAPI(unittest.TestCase):
 
         song_update = {
             "file":{
-                "file_id": new_file_id
+                "id": new_file_id
             }
         }
 
@@ -178,13 +180,13 @@ class TestAPI(unittest.TestCase):
         data = json.loads(data)
         self.assertEqual(response.status_code, 200)
 
-    def test_get_uploaded_file(self):
-        path = upload.path("test.txt")
-        with open(path, "wb") as f:
-            f.write(b"File contents")
+    # def test_get_uploaded_file(self):
+    #     path = upload.path("test.txt")
+    #     with open(path, "wb") as f:
+    #         f.write(b"File contents")
 
-        response = self.client.get("/uploads/test.txt")
+    #     response = self.client.get("/uploads/test.txt")
 
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.mimetype, "text/plain")
-        self.assertEqual(response.data, b"File contents")
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(response.mimetype, "text/plain")
+    #     self.assertEqual(response.data, b"File contents")

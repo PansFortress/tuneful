@@ -11,17 +11,6 @@ from tuneful import app
 from .database import session
 from .utils import upload_path
 
-song_schema = {
-    "definitions":{
-        "file":{
-            "type": "object",
-            "properties": {
-                "file_id": {"type": "int"}
-            }
-        }
-    }
-}
-
 @decorators.accept("application/json")
 @app.route("/api/songs", methods=["GET"])
 def songs_get():
@@ -45,11 +34,12 @@ def song_get(id):
 
     return Response(data, 200, mimetype="application/json")
 
+# TODO: Is to validate JSON data against Schema up-top
 @app.route("/api/songs", methods=["POST"])
 def songs_post():
     data = request.json
 
-    song = models.Song(file_id=data["file"]["file_id"])
+    song = models.Song(file_id=data["file"]["id"])
     session.add(song)
     session.commit()
 
@@ -57,6 +47,7 @@ def songs_post():
     
     return Response(data, 201, mimetype="application/json")
 
+# TODO: Setup a decorator to handle the code that's being done in 64-69
 @app.route("/api/songs/<int:id>", methods=["DELETE"])
 def song_delete(id):
     song = session.query(models.Song).get(id)
@@ -85,7 +76,7 @@ def song_put(id):
         data = json.dumps({"message": message})
         return Response(data, 404, mimetype="application/json")
 
-    song.file_id = data["file"]["file_id"]
+    song.file_id = data["file"]["id"]
     session.commit()
     message = "{} has been updated".format(id)
 
