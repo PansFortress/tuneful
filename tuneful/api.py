@@ -87,6 +87,8 @@ def song_put(id):
 
     song.file_id = data["file"]["file_id"]
     session.commit()
-    messsage = "{} has been updated".format(id)
+    message = "{} has been updated".format(id)
+
+    data = json.dumps({"message": message})
 
     return Response(data, 200, mimetype="application/json")

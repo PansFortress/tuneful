@@ -98,7 +98,7 @@ class TestAPI(unittest.TestCase):
 
         song = {
             "file": {
-                "id": file.id
+                "file_id": file.id
             }
         }
 
@@ -155,7 +155,14 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(song.id, 1)
         self.assertEqual(song.file_id, 1)
 
+        file = session.query(models.File).get(9)
+        self.assertEqual(None, file)
+
         new_file_id = 9
+
+        file = models.File(id=new_file_id, filename="test_file.mp4")
+        session.add(file)
+        session.commit()
 
         song_update = {
             "file":{
@@ -167,6 +174,6 @@ class TestAPI(unittest.TestCase):
                                    data=json.dumps(song_update),
                                    content_type="application/json",
                                    headers=[("Accept", "application/json")])
-
-        data = json.loads(response.data.decode("ascii"))
+        data = response.data.decode("ascii")
+        data = json.loads(data)
         self.assertEqual(response.status_code, 200)
