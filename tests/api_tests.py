@@ -149,7 +149,7 @@ class TestAPI(unittest.TestCase):
 
         data = json.loads(response.data.decode("ascii"))
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(data["message"], "1 does not exist and cannot be updated")
+        self.assertEqual(data["message"], "1 does not exist")
 
     def test_songs_put(self):
         self.create_entries()
@@ -180,13 +180,13 @@ class TestAPI(unittest.TestCase):
         data = json.loads(data)
         self.assertEqual(response.status_code, 200)
 
-    # def test_get_uploaded_file(self):
-    #     path = upload.path("test.txt")
-    #     with open(path, "wb") as f:
-    #         f.write(b"File contents")
+    def test_get_uploaded_file(self):
+        path = upload_path("test.txt")
+        with open(path, "wb") as f:
+            f.write(b"File contents")
 
-    #     response = self.client.get("/uploads/test.txt")
+        response = self.client.get("/uploads/test.txt")
 
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(response.mimetype, "text/plain")
-    #     self.assertEqual(response.data, b"File contents")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.mimetype, "text/plain")
+        self.assertEqual(response.data, b"File contents")

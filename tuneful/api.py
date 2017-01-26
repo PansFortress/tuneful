@@ -65,14 +65,13 @@ def song_delete(id):
 
     return Response(data, 200, mimetype="application/json")
 
-# TODO: Need to validate data schema
 @app.route("/api/songs/<int:id>", methods=["PUT"])
 def song_put(id):
     song = session.query(models.Song).get(id)
     data = request.json
 
     if not song:
-        message = "{} does not exist and cannot be updated".format(id)
+        message = "{} does not exist".format(id)
         data = json.dumps({"message": message})
         return Response(data, 404, mimetype="application/json")
 
@@ -83,3 +82,7 @@ def song_put(id):
     data = json.dumps({"message": message})
 
     return Response(data, 200, mimetype="application/json")
+
+@app.route("/uploads/<filename>", methods=["GET"])
+def uploaded_file(filename):
+    return send_from_directory(upload_path(), filename)

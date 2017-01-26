@@ -34,3 +34,17 @@ def require(mimetype):
             return Response(data, 415, mimetype="application/json")
         return wrapper
     return decorator
+
+def existence(table):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(id):
+            item = session.query(table).get(id)
+
+            if not item:
+                message = "{} does not exist".format(id)
+                data = json.dumps({"message": message})
+                return Response(data, 404, mimetype="application/son")
+            return item
+        return wrapper
+    return decorator
