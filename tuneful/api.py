@@ -66,7 +66,7 @@ def song_delete(id):
     return Response(data, 200, mimetype="application/json")
 
 @app.route("/api/songs/<int:id>", methods=["PUT"])
-def song_put(id, song):
+def song_put(id):
     song = session.query(models.Song).get(id)
     data = request.json
 
