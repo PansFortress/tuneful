@@ -4,7 +4,7 @@ import shutil
 import json
 try: from urllib.parse import urlparse
 except ImportError: from urlparse import urlparse # Py2 compatibility
-from io import StringIO
+from io import StringIO, BytesIO
 
 import sys; print(list(sys.modules.keys()))
 # Configure our app to use the testing databse
@@ -14,6 +14,8 @@ from tuneful import app
 from tuneful import models
 from tuneful.utils import upload_path
 from tuneful.database import Base, engine, session
+
+app.app_context().push()
 
 class TestAPI(unittest.TestCase):
     """ Tests for the tuneful API """
@@ -58,14 +60,16 @@ class TestAPI(unittest.TestCase):
                 "id": 1,
                 "file": {
                     "id": 1,
-                    "name": "test_file.mp4"
-                        }
+                    "name": "test_file.mp4",
+                    "path": "http://test_server/uploads/test_file.mp4"
+                    }
             },
             {
                 "id": 2,
                 "file":{
                     "id": 2,
-                    "name": "another_song.mp3"
+                    "name": "another_song.mp3",
+                    "path": "http://test_server/uploads/another_song.mp3"
                 }
             }]
         self.assertEqual(data, data_assertion)
@@ -77,8 +81,8 @@ class TestAPI(unittest.TestCase):
             "id": 1,
             "file": {
                 "id": 1,
-                "name": "test_file.mp4"
-                    
+                "name": "test_file.mp4",
+                "path": "/uploads/test_file.mp4"
                 }
             }
         self.assertEqual(song.as_dictionary(), data_assertion)
@@ -213,3 +217,4 @@ class TestAPI(unittest.TestCase):
         with open(path, "rb") as f:
             contents = f.read()
         self.assertEqual(contents,b"File contents")
+

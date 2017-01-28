@@ -45,6 +45,9 @@ def existence(table):
                 message = "{} does not exist".format(id)
                 data = json.dumps({"message": message})
                 return Response(data, 404, mimetype="application/son")
-            return item
+            return func(id, item)
         return wrapper
     return decorator
+
+
+
