@@ -48,14 +48,15 @@ def songs_post():
     return Response(data, 201, mimetype="application/json")
 
 # TODO: Setup a decorator to handle the code that's being done in 64-69
+@decorators.existence()
 @app.route("/api/songs/<int:id>", methods=["DELETE"])
-def song_delete(id):
-    song = session.query(models.Song).get(id)
+def song_delete(id, item):
+    # song = session.query(models.Song).get(id)
     
-    if not song:
-        message = "{} does not exist and cannot be deleted".format(id)
-        data = json.dumps({"message": message})
-        return Response(data, 404, mimetype="application/json")
+    # if not song:
+    #     message = "{} does not exist and cannot be deleted".format(id)
+    #     data = json.dumps({"message": message})
+    #     return Response(data, 404, mimetype="application/json")
 
     session.delete(song)
     session.commit()

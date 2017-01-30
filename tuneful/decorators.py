@@ -35,16 +35,20 @@ def require(mimetype):
         return wrapper
     return decorator
 
-def existence(table):
+def existence():
     def decorator(func):
+        """
+        Decorator which will check for an entity's existence against a model's
+        table and return a 404 if it does not exist
+        """
         @wraps(func)
-        def wrapper(id):
+        def wrapper(id, item):
             item = session.query(table).get(id)
 
             if not item:
-                message = "{} does not exist".format(id)
+                message = "{} does not exist and cannot be deleted".format(id)
                 data = json.dumps({"message": message})
-                return Response(data, 404, mimetype="application/son")
+                return Response(data, 404, mimetype="application/json")
             return func(id, item)
         return wrapper
     return decorator
