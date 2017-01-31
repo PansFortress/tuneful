@@ -22,16 +22,9 @@ def songs_get():
 
 @decorators.accept("application/json")
 @app.route("/api/songs/<int:id>", methods=["GET"])
-def song_get(id):
-    song = session.query(models.Song).get(id)
-
-    if not song:
-        message = "{} does not existed and cannot be retrieved".format(id)
-        data = json.dumps({"message": message})
-        return Response(data, 404, mimetype="application/json")
-    
-    data = json.dumps(song.as_dictionary())
-
+@decorators.existence(models.Song)
+def song_get(id, item):
+    data = json.dumps(item.as_dictionary())
     return Response(data, 200, mimetype="application/json")
 
 # TODO: Is to validate JSON data against Schema up-top
@@ -47,18 +40,10 @@ def songs_post():
     
     return Response(data, 201, mimetype="application/json")
 
-# TODO: Setup a decorator to handle the code that's being done in 64-69
-@decorators.existence()
-@app.route("/api/songs/<int:id>", methods=["DELETE"])
+@app.route("/api/songs/<int:id>", methods=["DELETE"]) # Remembers the function
+@decorators.existence(models.Song) # Changing the function
 def song_delete(id, item):
-    # song = session.query(models.Song).get(id)
-    
-    # if not song:
-    #     message = "{} does not exist and cannot be deleted".format(id)
-    #     data = json.dumps({"message": message})
-    #     return Response(data, 404, mimetype="application/json")
-
-    session.delete(song)
+    session.delete(item)
     session.commit()
 
     message = "{} has been deleted successfully".format(id)
@@ -67,16 +52,11 @@ def song_delete(id, item):
     return Response(data, 200, mimetype="application/json")
 
 @app.route("/api/songs/<int:id>", methods=["PUT"])
-def song_put(id):
-    song = session.query(models.Song).get(id)
+@decorators.existence(models.Song)
+def song_put(id,item):
     data = request.json
 
-    if not song:
-        message = "{} does not exist".format(id)
-        data = json.dumps({"message": message})
-        return Response(data, 404, mimetype="application/json")
-
-    song.file_id = data["file"]["id"]
+    item.file_id = data["file"]["id"]
     session.commit()
     message = "{} has been updated".format(id)
 

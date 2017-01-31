@@ -2,6 +2,7 @@ import json
 from functools import wraps
 
 from flask import request, Response
+from .database import session
 
 def accept(mimetype):
     def decorator(func):
@@ -35,18 +36,18 @@ def require(mimetype):
         return wrapper
     return decorator
 
-def existence():
+def existence(table):
     def decorator(func):
         """
         Decorator which will check for an entity's existence against a model's
         table and return a 404 if it does not exist
         """
         @wraps(func)
-        def wrapper(id, item):
+        def wrapper(id):
             item = session.query(table).get(id)
 
             if not item:
-                message = "{} does not exist and cannot be deleted".format(id)
+                message = "{} does not exist".format(id)
                 data = json.dumps({"message": message})
                 return Response(data, 404, mimetype="application/json")
             return func(id, item)

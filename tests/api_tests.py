@@ -72,6 +72,15 @@ class TestAPI(unittest.TestCase):
             }]
         self.assertEqual(data, data_assertion)
 
+    def test_song_get_no_match(self):
+        self.create_entries()
+        response = self.client.get("api/songs/4",
+            headers=[("Accept", "application/json")])
+        self.assertEqual(response.status_code, 404)
+        data = json.loads(response.data.decode("ascii"))
+        self.assertEqual(data["message"], "4 does not exist")
+
+
     def test_song_get(self):
         self.create_entries()
         song = session.query(models.Song).get(1)
@@ -192,26 +201,4 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(response.mimetype, "text/plain")
         self.assertEqual(response.data, b"File contents")
 
-    # def test_file_upload(self):
-    #     data = {
-    #         "file": (BytesIO(b"File contents"), "test.txt")
-    #     }
-
-    #     response = self.client.post("/api/files",
-    #                                 data=data,
-    #                                 content_type="multipart/form-data",
-    #                                 headers=[("Accept", "application/json")]
-    #                                 )
-
-    #     self.assertEqual(response.status_code,201)
-    #     self.assertEqual(response.mimetype, "application/json")
-
-    #     data = json.loads(response.data.decode("ascii"))
-    #     self.assertEqual(urlparse(data["path"]).path, "/uploads/test.txt")
-
-    #     path = upload_path("test.txt")
-    #     self.assertTrue(os.path.isfile(path))
-    #     with open(path, "rb") as f:
-    #         contents = f.read()
-    #     self.assertEqual(contents,b"File contents")
 
