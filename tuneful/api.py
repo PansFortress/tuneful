@@ -27,7 +27,6 @@ def song_get(id, item):
     data = json.dumps(item.as_dictionary())
     return Response(data, 200, mimetype="application/json")
 
-# TODO: Is to validate JSON data against Schema up-top
 @app.route("/api/songs", methods=["POST"])
 def songs_post():
     data = request.json
